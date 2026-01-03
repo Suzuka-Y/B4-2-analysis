@@ -3,3 +3,5 @@ program/__pycache__
 *.txt
 *.csv
 *.png
+
+!requirements.txt
