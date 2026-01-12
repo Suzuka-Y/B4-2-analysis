@@ -4,13 +4,22 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import Counter
 from janome.tokenizer import Tokenizer
+import platform
 
-def run_qualitative_analysis(input_file, output_dir):
+def run_qualitative_analysis(df, output_dir):
     """
-    匿名化データを用いて頻出語分析およびクロス集計を行う．
+    匿名化データを用いて頻出語分析およびクロス集計を行う
     """
+
+    system = platform.system()
+    if system == 'Darwin':  # macOS
+        plt.rcParams['font.family'] = 'Hiragino Sans'
+    elif system == 'Windows':  # Windows
+        plt.rcParams['font.family'] = 'MS Gothic'
+    else:
+        plt.rcParams['font.family'] = 'IPAexGothic'
+
     try:
-        df = pd.read_csv(input_file)
         t = Tokenizer()
     except Exception:
         return
@@ -46,7 +55,7 @@ def run_qualitative_analysis(input_file, output_dir):
 
     # クロス集計とヒートマップの作成
     top_n_words = [w for w, c in Counter(all_words).most_common(30)]
-    cross_tab = pd.DataFrame(index=df['Category'].unique(), columns=top_n_words).fillna(0)
+    cross_tab = pd.DataFrame(0, index=df['Category'].unique(), columns=top_n_words)
 
     for cat, words in category_words.items():
         counts = Counter(words)
@@ -57,5 +66,8 @@ def run_qualitative_analysis(input_file, output_dir):
     sns.heatmap(cross_tab.astype(int), annot=True, fmt="d", cmap="YlGnBu")
     plt.title('Word Frequency by Category')
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'figures', 'qualitative_heatmap.png'))
+    output_path = os.path.join(output_dir, 'figures', 'qualitative_heatmap.png')
+    plt.savefig(output_path)
     plt.close()
+
+    print(f"qualiative heatmap saved: {output_path}")

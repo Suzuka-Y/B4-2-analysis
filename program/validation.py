@@ -1,21 +1,26 @@
 import pandas as pd
 from scipy import stats
 import numpy as np
+import os
 
 # 検証対象のマッピング（カテゴリ: ターゲット質問）
 TARGET_MAP = {
-    'position': 'q3',    # 配置 -> Q3
+    'position': 'q3',    # 変位 -> Q3
     'size': 'q4',        # サイズ -> Q4
-    'lack': 'q5',        # 欠如 -> Q5
-    'repetition': 'q6',  # 過剰 -> Q6
-    'human': 'q7'        # 人物 -> Q7
+    'lack': 'q5',        # 欠落 -> Q5
+    'repetition': 'q6',  # 反復 -> Q6
+    'human': 'q7'        # 社会的存在 -> Q7
 }
 
-def run_validation(df):
+def run_validation(df, output_dir):
     """
     各操作変数の妥当性を検証する．Base条件と刺激条件の間で対応のあるt検定を行う．
     """
-    print("\n" + "="*50 + "\n  Step 2: Manipulation Check (Validity Test)\n" + "="*50)
+    lines = []
+    lines.append("\n" + "="*80)
+    lines.append("  Manipulation Check Test")
+    lines.append("="*80)
+
     results = []
 
     for category, target_q in TARGET_MAP.items():
@@ -47,7 +52,22 @@ def run_validation(df):
             'Sig': significance
         })
 
-    res_df = pd.DataFrame(results)
-    if not res_df.empty:
-        print(res_df.to_string(index=False))
-    return res_df
+    if results:
+        header = f"{'Category':>10} {'Target_Q':>10} {'Mean_Base':>10} {'Mean_Stim':>10} {'Diff':>6} {'t-stat':>8} {'p-val':>8} {'Sig':>4}"
+        lines.append(header)
+        lines.append("-" * 80)
+
+        for res in results:
+            row_str = f"{res['Category']:>10} {res['Target_Q']:>10} {res['Mean_Base']:10.1f} {res['Mean_Stim']:10.1f} {res['Diff']:6.1f} {res['t-stat']:8.3f} {res['p-val']:8.4f} {res['Sig']:>4}"
+            lines.append(row_str)
+    else:
+        lines.append("No paired data found for validation.")
+    
+    output_text = "\n".join(lines)
+    save_path = os.path.join(output_dir, 'manipulation_check.txt')
+    try:
+        with open(save_path, 'w', encoding='utf-8') as f:
+            f.write(output_text)
+        print(f"manipulation check report saved: {save_path}")
+    except Exception as e:
+        print(f"[!] Failed to save report: {e}")

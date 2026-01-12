@@ -17,7 +17,7 @@ def clean_data_for_qualitative(input_file, output_dir):
     cols_to_drop = [c for c in sensitive_cols if c in df.columns]
 
     df_clean = df.drop(columns=cols_to_drop)
-    output_path = os.path.join(output_dir, 'qualitative_data_anonymized.csv')
+    output_path = os.path.join(output_dir, 'integrated_tidy_data_anon.csv')
     df_clean.to_csv(output_path, index=False, encoding='utf-8-sig')
     
     return df_clean

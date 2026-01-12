@@ -1,4 +1,3 @@
-import pandas as pd
 import os
 
 def run_demographics(df, output_dir):
@@ -11,14 +10,13 @@ def run_demographics(df, output_dir):
     col_map = {c.lower(): c for c in df.columns}
     pid_col = col_map.get('pid')
     age_col = col_map.get('age')
-    gender_col = col_map.get('gender') or col_map.get('sex')
-    time_col = col_map.get('time') or col_map.get('exptime') or col_map.get('duration')
+    sex_col = col_map.get('sex')
+    time_col = col_map.get('exptime')
     
-    if not (pid_col and age_col and gender_col):
+    if not (pid_col and age_col and sex_col and time_col):
         return
 
-    cols = [pid_col, age_col, gender_col]
-    if time_col: cols.append(time_col)
+    cols = [pid_col, age_col, sex_col, time_col]
     
     participants = df.groupby(pid_col)[cols].first()
     
@@ -33,8 +31,8 @@ def run_demographics(df, output_dir):
         
         # 性別分布
         f.write(f"--- Gender ---\n")
-        counts = participants[gender_col].value_counts()
-        ratios = participants[gender_col].value_counts(normalize=True) * 100
+        counts = participants[sex_col].value_counts()
+        ratios = participants[sex_col].value_counts(normalize=True) * 100
         for label in counts.index:
             f.write(f"{label}: {counts[label]} ({ratios[label]:.1f}%)\n")
         
@@ -43,4 +41,4 @@ def run_demographics(df, output_dir):
             t_stats = participants[time_col].describe()
             f.write(f"\n--- Response Time ---\nMean: {t_stats['mean']:.2f}, SD: {t_stats['std']:.2f}\n")
     
-    print(f"[Output] Demographics report saved: {report_path}")
+    print(f"demographics report saved: {report_path}")
