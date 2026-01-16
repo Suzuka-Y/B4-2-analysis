@@ -70,4 +70,4 @@ def run_qualitative_analysis(df, output_dir):
     plt.savefig(output_path)
     plt.close()
 
-    print(f"qualiative heatmap saved: {output_path}")
+    print(f"\n[i] qualiative heatmap saved: {output_path}")

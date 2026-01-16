@@ -24,5 +24,5 @@ def run_standardize(df_anon, output_dir):
     output_path = output_dir+'/standardized_data.csv'
     df_std.to_csv(output_path, index=False, encoding='utf-8-sig')
 
-    print(f"standerdized data saved: {output_path}")
+    print(f"\n[i] Standerdized data saved: {output_path}")
     return df_std

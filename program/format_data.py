@@ -10,7 +10,7 @@ CATEGORY_MAP = {
 
 def parse_text_file(file_path):
     """
-    記述回答用テキストファイルを解析し，質問ごとの回答と理由を抽出する．
+    記述回答用テキストファイルを解析し，質問ごとの回答と理由を抽出する
     """
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -49,7 +49,7 @@ def parse_text_file(file_path):
 
 def format_data(base_dir, output_dir):
     """
-    指定ディレクトリ内の定量的データ(CSV)と定性的データ(TXT)を統合する．
+    指定ディレクトリ内の定量的データ(CSV)と定性的データ(TXT)を統合する
     """
     quant_dir = os.path.join(base_dir, 'quant_data')
     qual_dir = os.path.join(base_dir, 'qual_data')
@@ -93,7 +93,7 @@ def format_data(base_dir, output_dir):
 
         # 刺激IDからカテゴリとレベルを抽出
         def parse_stimulus(s):
-            if s == 'base': return 'base', 0
+            if s == 'base': return 'base', 1
             match = re.match(r"([a-z]+)(\d+)", s)
             return (match.group(1), int(match.group(2))) if match else (s, None)
         

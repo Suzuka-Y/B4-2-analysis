@@ -17,9 +17,6 @@ def main():
     
     # 1. データ整形: 実験ログと記述回答を結合し，分析可能な形式へ変換する
     df = format_data(RAW_DATA_DIR, OUTPUT_DIR)
-    # 1段階目の刺激データを扱わないのであればこれらを通す
-    df = df[(df['Category'] == 'base') | (df['Level'] == 2)].copy()
-    df.to_csv(os.path.join(OUTPUT_DIR, 'integrated_tidy_data.csv'), index=False, encoding='utf-8-sig')
 
     # 2. 参加者属性の集計: 年齢・性別等の基本統計量を算出する
     run_demographics(df, OUTPUT_DIR)
@@ -46,7 +43,7 @@ def main():
     if df_anon is not None:
         run_qualitative_analysis(df_anon, OUTPUT_DIR)
 
-    print("=== All Analysis Steps Completed Successfully ===")
+    print("\n=== All Analysis Steps Completed Successfully ===")
 
 if __name__ == "__main__":
     main()

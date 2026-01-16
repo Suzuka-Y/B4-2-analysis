@@ -23,6 +23,10 @@ def calculate_vif(df):
     """
     計算パート: 説明変数間VIFの算出
     """
+    df_vif = df[df['Category'] != 'base'].copy()
+
+    if df_vif.empty:
+        return None
 
     # 説明変数
     explanatory_vars = ['q3', 'q4', 'q5', 'q6', 'q7']
@@ -90,6 +94,6 @@ def save_vif_report(results, output_dir):
     try:
         with open(report_path, 'w', encoding='utf-8') as f:
             f.write("\n".join(lines))
-        print(f"VIF report saved: {report_path}")
+        print(f"\n[i] VIF report saved: {report_path}")
     except Exception as e:
         print(f"[!] Failed to save VIF report: {e}")

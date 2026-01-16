@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
-def run_tukey_kramer(stim_df, output_dir):
+def run_tukey_kramer(stim_df, output_dir, lvl):
     """
     Tukey-Kramer法による多重比較検定を行い，結果をテキストファイルに出力する．
     """
@@ -49,10 +49,10 @@ def run_tukey_kramer(stim_df, output_dir):
         lines.append(f"\n[!] Tukey-Kramer test failed: {e}")
 
     # ファイル保存
-    output_path = os.path.join(output_dir, 'post-hoc.txt')
+    output_path = os.path.join(output_dir, f'post-hoc_level{lvl}.txt')
     try:
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write("\n".join(lines))
-        print(f'post-hoc test report saved: {output_path}')
+        print(f'\n[i] post-hoc test report saved: {output_path}')
     except Exception as e:
         pass

@@ -4,35 +4,35 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-from program.multico import run_multicollinearity_check
-
 def run_regression(df, output_dir):
     """
-    重回帰分析のメイン実行関数
+    重回帰分析
+    Level 2（弱刺激）と Level 3（強刺激）の両方をプールして分析を行う（同一モデルとしての分析）
     """
 
-    # 計算パート: 統計処理を行い、結果辞書を取得
+    # 計算パート
     results = calculate_regression(df)
     
     if not results:
         print("[!] Regression analysis failed due to data issues.")
         return
 
-    # 出力パート: 結果を受け取り、ファイル保存とグラフ描画を行う
+    # 出力パート
     save_regression_outputs(results, output_dir)
 
-    # マルチコ検証
-    run_multicollinearity_check(df, output_dir)
 
 def calculate_regression(df):
     """
     計算パート
     """
-    # Level 2のみ抽出
-    if 'Level' in df.columns:
-        df_reg = df[df['Level'] == 2].copy()
-    else:
-        df_reg = df.copy()
+    df_reg = df[df['Category'] != 'base'].copy()
+
+    if df_reg.empty:
+        print("[!] No data found for regression (check Category column).")
+        return None
+
+    # レベルごとのデータ数を確認（ログ用）
+    level_counts = df_reg['Level'].value_counts().to_dict()
 
     explanatory_vars = ['q3', 'q4', 'q5', 'q6', 'q7']
     targets = ['q1', 'q2']
@@ -61,28 +61,36 @@ def calculate_regression(df):
             
     return {
         'n_samples': len(df_reg),
+        'level_counts': level_counts,
         'explanatory_vars': explanatory_vars,
         'models': models,
         'summary_data': summary_data
     }
 
+
 def save_regression_outputs(results, output_dir):
     """
     出力パート
     """
-    # ディレクトリ準備
     fig_dir = os.path.join(output_dir, 'figures')
+    os.makedirs(fig_dir, exist_ok=True)
     report_path = os.path.join(output_dir, 'regression_report.txt')
 
     models = results['models']
     explanatory_vars = results['explanatory_vars']
     
-    # テキストレポートの作成
     lines = []
     lines.append("Regression Analysis Report")
     lines.append("==========================")
-    lines.append(f"Data Points (Level 2 only): {results['n_samples']}")
-    lines.append(f"Explanatory Variables: {', '.join(explanatory_vars)}")
+    lines.append(f"Total Data Points: {results['n_samples']}")
+    
+    # 内訳の表示
+    lines.append("Data breakdown by Level:")
+    for lvl, count in sorted(results['level_counts'].items()):
+        lines.append(f"  - Level {lvl}: {count} samples")
+    lines.append("(Both levels are pooled in the regression model)")
+    
+    lines.append(f"\nExplanatory Variables: {', '.join(explanatory_vars)}")
     lines.append("-" * 60)
 
     for target, model in models.items():
@@ -109,11 +117,11 @@ def save_regression_outputs(results, output_dir):
     try:
         with open(report_path, 'w', encoding='utf-8') as f:
             f.write("\n".join(lines))
-        print(f"regression report saved: {report_path}")
+        print(f"\n[i] regression report saved: {report_path}")
     except Exception as e:
         print(f"[!] Failed to save report: {e}")
 
-    # グラフの描画
+    # グラフ描画
     if results['summary_data']:
         res_df = pd.DataFrame(results['summary_data'])
         
@@ -121,7 +129,7 @@ def save_regression_outputs(results, output_dir):
         sns.barplot(x='Factor', y='Coefficient', hue='Target', data=res_df, palette='viridis')
         plt.axhline(0, color='black', linewidth=0.8)
         
-        plt.title('Comparison of Standardized Coefficients (Beta)\nQ1 vs Q2')
+        plt.title('Comparison of Standardized Coefficients (Beta)\nQ1 vs Q2 (Pooled Level 2 & 3)')
         plt.ylabel('Standardized Beta')
         plt.xlabel('Explanatory Factors')
         plt.legend(title='Target Variable')
@@ -132,4 +140,4 @@ def save_regression_outputs(results, output_dir):
         plt.savefig(img_path)
         plt.close()
 
-        print(f"regression comparison plot saved: {img_path}")
+        print(f"\n[i] regression figure saved: {img_path}")

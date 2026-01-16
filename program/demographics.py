@@ -41,4 +41,4 @@ def run_demographics(df, output_dir):
             t_stats = participants[time_col].describe()
             f.write(f"\n--- Response Time ---\nMean: {t_stats['mean']:.2f}, SD: {t_stats['std']:.2f}\n")
     
-    print(f"demographics report saved: {report_path}")
+    print(f"\n[i] Demographics report saved: {report_path}")
