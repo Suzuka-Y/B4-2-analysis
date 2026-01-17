@@ -1,4 +1,3 @@
-import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -83,7 +82,7 @@ def save_strength_outputs(results, output_dir):
     """
     出力パート
     """
-    fig_dir = os.path.join(output_dir, 'figure')
+    fig_dir = os.path.join(output_dir, 'figures')
     os.makedirs(fig_dir, exist_ok=True)
     
     stim_df_all = results['stim_df_all']
