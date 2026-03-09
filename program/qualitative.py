@@ -66,7 +66,7 @@ def run_qualitative_analysis(df, output_dir):
     sns.heatmap(cross_tab.astype(int), annot=True, fmt="d", cmap="YlGnBu")
     plt.title('Word Frequency by Category')
     plt.tight_layout()
-    output_path = os.path.join(output_dir, 'figures', 'qualitative_heatmap.png')
+    output_path = os.path.join(output_dir, 'qualitative_heatmap.png')
     plt.savefig(output_path)
     plt.close()
 
